@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(255)
+  surname       String    @db.VarChar(255)
+  username      String    @db.VarChar(255)
+  password      String    @db.VarChar(255)
+  email         String    @db.VarChar(255)
+  city          String    @db.VarChar(255)
+  address       String?
+  gender        String    @db.VarChar(255)
+  age           String    @db.VarChar(255)
+  image_profile String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  Post          Post[]
+  Like          Like[]
+  Comment       Comment[]
+}
+
+model Post {
+  author_id   Int?
+  author_name String
+  id          Int       @id @default(autoincrement())
+  content     String    @db.VarChar(255)
+  likes       String?
+  User        User?     @relation(fields: [author_id], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Like        Like[]
+  Comment     Comment[]
+}
+
+model Like {
+  id      Int   @id @default(autoincrement())
+  post_id Int
+  user_id Int
+  Post    Post? @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  User    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  post_id   Int
+  user_id   Int
+  createdAt DateTime @default(now())
+  Post      Post?    @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  User      User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
